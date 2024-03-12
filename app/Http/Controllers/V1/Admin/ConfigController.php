@@ -40,11 +40,11 @@ class ConfigController extends Controller
     {
         $obj = new SendEmailJob([
             'email' => $request->user['email'],
-            'subject' => 'This is v2board test email',
+            'subject' => '亲，这是一封测试邮件！',
             'template_name' => 'notify',
             'template_value' => [
                 'name' => config('v2board.app_name', 'V2Board'),
-                'content' => 'This is v2board test email',
+                'content' => '亲，这是一封测试邮件！',
                 'url' => config('v2board.app_url')
             ]
         ]);
