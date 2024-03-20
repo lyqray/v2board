@@ -24,9 +24,9 @@ dns:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
   fallback:
-    - tls://1.1.1.1:853
-    - tls://1.0.0.1:853
-    - 101.6.6.6:5353
+    - tls://1.1.1.1:853 # 改善延迟测试ERROR
+    - tls://1.0.0.1:853 # 改善延迟测试ERROR
+    - 101.6.6.6:5353 # 改善延迟测试ERROR
   fallback-filter:
     geoip: true
     ipcidr:
@@ -43,6 +43,13 @@ proxy-groups:
 rules:
   # 自定义规则
   ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
+  - DOMAIN-SUFFIX,apps.apple.com,DIRECT # 修复Mac应用商店连接错误
+  - DOMAIN,edge.microsoft.com,$app_name # 修复Edge浏览器同步失败
+  - DOMAIN,www.speedtest.net,$app_name # speedtest测试经过代理
+  - DOMAIN,www.daniao.org,DIRECT # 修复某些屏蔽外国的IDC网站
+  - DOMAIN-SUFFIX,dogyun.com,DIRECT # 修复某些屏蔽外国的IDC网站
+  - DOMAIN,www.idcoffer.com,DIRECT # 修复某些屏蔽外国的IDC网站
+  - DOMAIN,www.coze.com,$app_name # 用户需求
 
   # Google 中国服务
   - DOMAIN-SUFFIX,services.googleapis.cn,$app_name
@@ -51,11 +58,6 @@ rules:
   # Apple
   - DOMAIN,safebrowsing.urlsec.qq.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
   - DOMAIN,safebrowsing.googleapis.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
-  - DOMAIN,www.daniao.org,DIRECT
-  - DOMAIN-SUFFIX,dogyun.com,DIRECT
-  - DOMAIN,www.idcoffer.com,DIRECT
-  - DOMAIN,edge.microsoft.com,$app_name
-  - DOMAIN,www.speedtest.net,$app_name
   - DOMAIN,developer.apple.com,$app_name
   - DOMAIN-SUFFIX,digicert.com,$app_name
   - DOMAIN,ocsp.apple.com,$app_name
@@ -67,7 +69,7 @@ rules:
   - DOMAIN,testflight.apple.com,$app_name
   - DOMAIN,sandbox.itunes.apple.com,$app_name
   - DOMAIN,itunes.apple.com,$app_name
-  - DOMAIN-SUFFIX,apps.apple.com,DIRECT
+  - DOMAIN-SUFFIX,apps.apple.com,$app_name
   - DOMAIN-SUFFIX,blobstore.apple.com,$app_name
   - DOMAIN,cvws.icloud-content.com,$app_name
   - DOMAIN-SUFFIX,mzstatic.com,DIRECT
