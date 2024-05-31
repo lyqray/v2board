@@ -119,8 +119,21 @@
                 "outbound": "direct"
             },
 
-
+            
             {
+            	"domain": [
+            	 	"safebrowsing.urlsec.qq.com",
+            	 	"safebrowsing.googleapis.com"
+            	],
+            	"domain_suffix": [
+            	 	"local",
+            	 	"itunes.apple.com",
+            	 	"cdn-apple.com",
+            	 	"apple.com",
+            	 	"apple-cloudkit.com",
+            	 	"apple-mapkit.com",
+            	 	"apps.apple.com"
+            	],
                 "ip_cidr": [
             		"127.0.0.0/8",
             		"172.16.0.0/12",
@@ -132,6 +145,20 @@
             		"fe80::/10"
             	],
             	"outbound": "direct"
+            },
+            {
+            	"domain": [
+            	 	"developer.apple.com",
+            	 	"ocsp.apple.com",
+            	 	"testflight.apple.com",
+            	 	"sandbox.itunes.apple.com",
+            	 	"itunes.apple.com"
+            	],
+            	"domain_suffix": [
+            	 	"apple-dns.net",
+            	 	"blobstore.apple.com"
+            	],
+            	"outbound": "节点选择"
             }
         ]
     }
