@@ -119,7 +119,7 @@
                 "outbound": "direct"
             },
 
-
+            
             {
             	"domain": [
             	 	"safebrowsing.urlsec.qq.com",
