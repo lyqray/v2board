@@ -9,8 +9,8 @@
             },
             {
                 "disable_cache": true,
-                "geosite": [
-                    "category-ads-all"
+                "rule_set": [
+                    "geosite-category-ads-all"
                 ],
                 "server": "block"
             },
@@ -23,7 +23,11 @@
                 "server": "local"
             },
             {
-                "geosite": "cn",
+                "rule_set": [
+                    "geoip-cn",
+                    "geosite-cn",
+                    "geosite-private"
+                ],
                 "server": "local"
             }
         ],
@@ -92,7 +96,7 @@
         "auto_detect_interface": true,
         "rules": [
             {
-                "geosite": "category-ads-all",
+                "rule_set": "geosite-category-ads-all",
                 "outbound": "block"
             },
             {
@@ -108,14 +112,15 @@
                 "outbound": "节点选择"
             },
             {
-                "geoip": [
-                    "cn",
-                    "private"
-                ],
+                "ip_is_private": true,
                 "outbound": "direct"
             },
             {
-                "geosite": "cn",
+                "rule_set": [
+                    "geoip-cn",
+                    "geosite-cn",
+                    "geosite-private"
+                ],
                 "outbound": "direct"
             },
 
@@ -159,6 +164,36 @@
             	 	"blobstore.apple.com"
             	],
             	"outbound": "节点选择"
+            }
+        ],
+        "rule_set": [
+            {
+                "tag": "geosite-category-ads-all",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs",
+                "download_detour": "节点选择"
+            },
+            {
+                "tag": "geoip-cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+                "download_detour": "节点选择"
+            },
+            {
+        	    "tag": "geosite-cn",
+        	  	"type": "remote",
+        	    "format": "binary",
+        	    "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        	    "download_detour": "节点选择"
+            },
+            {
+        	    "tag": "geosite-private",
+        	    "type": "remote",
+        	    "format": "binary",
+        	    "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-private.srs",
+        	    "download_detour": "节点选择"
             }
         ]
     }
