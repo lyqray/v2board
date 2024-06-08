@@ -585,4 +585,15 @@ rules:
 
   # 最终规则
   - GEOIP,CN,DIRECT
+  - GEOSITE,cn,DIRECT # 自己加的geosite中国直连
+  - GEOSITE,category-ads-all,REJECT # 自己加的geosite去广告规则
+  - RULE-SET,reject,REJECT # 自己加的第三方去广告规则
   - MATCH,$app_name
+
+rule-providers: # 自己加的第三方去广告规则
+  reject:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
+    path: ./ruleset/reject.yaml
+    interval: 86400
