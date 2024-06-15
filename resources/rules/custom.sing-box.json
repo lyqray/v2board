@@ -132,17 +132,12 @@
             
             {
             	"domain": [
-            	 	"safebrowsing.urlsec.qq.com",
-            	 	"safebrowsing.googleapis.com"
+            	 	"www.daniao.org",
+            	 	"www.idcoffer.com",
+                    "www.dogyun.com"
             	],
             	"domain_suffix": [
-            	 	"local",
-            	 	"itunes.apple.com",
-            	 	"cdn-apple.com",
-            	 	"apple.com",
-            	 	"apple-cloudkit.com",
-            	 	"apple-mapkit.com",
-            	 	"apps.apple.com"
+            	 	"local"
             	],
                 "ip_cidr": [
             		"127.0.0.0/8",
@@ -158,15 +153,10 @@
             },
             {
             	"domain": [
-            	 	"developer.apple.com",
-            	 	"ocsp.apple.com",
-            	 	"testflight.apple.com",
-            	 	"sandbox.itunes.apple.com",
-            	 	"itunes.apple.com"
+            	 	"www.coze.com"
             	],
             	"domain_suffix": [
-            	 	"apple-dns.net",
-            	 	"blobstore.apple.com"
+            	 	"coze.com"
             	],
             	"outbound": "节点选择"
             }
