@@ -23,12 +23,15 @@
                 "server": "local"
             },
             {
+                "rule_set": "geoip-cn",
+                "server": "direct"
+            },
+            {
                 "rule_set": [
-                    "geoip-cn",
                     "geosite-cn",
                     "geosite-private"
                 ],
-                "server": "local"
+                "server": "direct"
             }
         ],
         "servers": [
@@ -121,8 +124,11 @@
                 "outbound": "direct"
             },
             {
+                "rule_set": "geoip-cn",
+                "outbound": "direct"
+            },
+            {
                 "rule_set": [
-                    "geoip-cn",
                     "geosite-cn",
                     "geosite-private"
                 ],
