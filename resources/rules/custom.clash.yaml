@@ -9,26 +9,93 @@ mode: rule
 log-level: info
 external-controller: 127.0.0.1:9090
 
+#自定义 geodata url
+geox-url:
+  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb"
+
+geo-auto-update: false # 是否自动更新 geodata
+geo-update-interval: 24 # 更新间隔，单位：小时
+
+tun: # 自己增加的tun模块
+  enable: true
+  stack: mixed # system/gvisor/mixed
+  dns-hijack:
+    - "any:53"
+    - "tcp://any:53"
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+
+sniffer: # 自己增加的域名嗅探模块
+  enable: true # 嗅探开关
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: false # 全局配置，优先级低于 sniffer.sniff 实际配置
+  sniff: # TLS 和 QUIC 默认如果不配置 ports 默认嗅探 443
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true # 可覆盖 sniffer.override-destination
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  force-domain: # 需要强制嗅探的域名，默认只对IP嗅探
+    #- '+'      # 去掉注释后等于全局嗅探
+    - +.v2ex.com
+  skip-domain: # 列表中的sni字段，保留mapping结果，不通过嗅探还原域名，优先级比force-domain高
+    - Mijia Cloud
+
 dns:
   enable: true
   # listen: 0.0.0.0:53
   ipv6: false
 
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter: # 当下列条件匹配，不使用fake-ip
+    #- "+.*" # 全局回退，取消注释等于使用redir-host模式
+    - "*"
+    - "+.lan"
+    - "+.local"
+  use-hosts: true
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
-  use-hosts: true
+    - 114.114.114.114
   nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
+  #nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（geox模式，二选一）
+  #  "geosite:cn,private":
+  #    - https://doh.pub/dns-query
+  #    - https://dns.alidns.com/dns-query
+  #  "geosite:geolocation-!cn":
+  #    - "https://dns.cloudflare.com/dns-query"
+  #    - "https://dns.google/dns-query"
+  #  "geosite:category-ads-all": rcode://success
+  nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
+    "rule-set:cn_domain,private":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
+    "rule-set:geolocation-!cn":
+      - "https://dns.cloudflare.com/dns-query"
+      - "https://dns.google/dns-query"
+    "rule-set:category-ads-all": rcode://success
+  # 当配置 fallback 时，会查询 nameserver 中返回的 IP 是否为 CN，非必要配置
+  # 当不是 CN，则使用 fallback 中的 DNS 查询结果
+  # 确保配置 fallback 时能够正常查询
   fallback:
+    - https://doh.dns.sb/dns-query
+    - https://dns.cloudflare.com/dns-query
+    - https://dns.twnic.tw/dns-query
+    - tls://8.8.8.8:853
+    - tls://8.8.4.4:853
     - tls://1.1.1.1:853 # 改善延迟测试ERROR
     - tls://1.0.0.1:853 # 改善延迟测试ERROR
-    - 101.6.6.6:5353 # 改善延迟测试ERROR
-  fallback-filter:
-    geoip: true
+  fallback-filter: # 当下列条件匹配，不使用fallback的dns查询结果
+    geoip: true # 配置是否使用 geoip
     ipcidr:
       - 240.0.0.0/4
       - 0.0.0.0/32
@@ -43,11 +110,10 @@ proxy-groups:
 rules:
   # 自定义规则
   ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
-  - DOMAIN,edge.microsoft.com,$app_name # 修复Edge浏览器同步失败
-  - DOMAIN,www.speedtest.net,$app_name # speedtest测试经过代理
+  - DOMAIN,www.speedtest.net,$app_name # speedtest走代理
   - DOMAIN,www.daniao.org,DIRECT # 修复某些屏蔽外国的IDC网站
-  - DOMAIN-SUFFIX,dogyun.com,DIRECT # 修复某些屏蔽外国的IDC网站
   - DOMAIN,www.idcoffer.com,DIRECT # 修复某些屏蔽外国的IDC网站
+  - DOMAIN,www.dogyun.com,DIRECT # 修复某些屏蔽外国的IDC网站
   - DOMAIN,www.coze.com,$app_name # 用户需求
 
   # Google 中国服务
@@ -584,41 +650,41 @@ rules:
 
   # 最终规则
   - GEOIP,CN,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
-  - GEOIP,private,DIRECT,no-resolve # 自己加的geoip_private直连
-  - GEOSITE,cn,DIRECT # 自己加的geosite_cn直连
-  - GEOSITE,private,DIRECT # 自己加的geosite_private直连
-  - GEOSITE,category-ads-all,REJECT # 自己加的geosite去广告规则
-  #- RULE-SET,cn,DIRECT # 自己加的meta_cn直连规则
-  #- RULE-SET,reject,REJECT # 自己加的第三方去广告规则
-  - RULE-SET,AD,REJECT # 自己加的第三方去广告规则
-  - RULE-SET,ProgramAD,REJECT # 自己加的第三方去广告规则
+  - GEOIP,private,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
+  #- GEOSITE,cn,DIRECT # 自己加的geosite_cn直连
+  #- GEOSITE,private,DIRECT # 自己加的geosite_private直连
+  #- GEOSITE,category-ads-all,REJECT # 自己加的geosite去广告规则
+  - RULE-SET,cn_domain,DIRECT # 自己加的rule-set
+  - RULE-SET,private,DIRECT # 自己加的rule-set
+  - RULE-SET,category-ads-all,REJECT # 自己加的rule-set
+  - RULE-SET,geolocation-!cn,$app_name # 自己加的rule-set
   - MATCH,$app_name
 
 rule-providers: # 自己加的第三方去广告规则集
-#  cn:
-#    behavior: domain
-#    interval: 86400
-#    path: ./provider/rule-set/cn_domain.yaml
-#    type: http
-#    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml"
-
-#  reject:
-#    type: http
-#    behavior: domain
-#    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt"
-#    path: ./ruleset/reject.yaml
-#    interval: 86400
-
-  AD:
+  cn_domain:
     type: http
     behavior: domain
-    url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/AD.yaml"
-    path: ./rules/AD.yaml
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.yaml"
+    path: ./provider/rule-set/cn_domain.yaml
     interval: 86400
 
-  ProgramAD:
+  private:
     type: http
     behavior: domain
-    url: "https://raw.githubusercontent.com/earoftoast/clash-rules/main/ProgramAD.yaml"
-    path: ./rules/ProgramAD.yaml
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.yaml"
+    path: ./provider/rule-set/private.yaml
+    interval: 86400
+
+  category-ads-all:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ads-all.yaml"
+    path: ./provider/rule-set/category-ads-all.yaml
+    interval: 86400
+
+  geolocation-!cn:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/geolocation-!cn.yaml"
+    path: ./provider/rule-set/geolocation-!cn.yaml
     interval: 86400
