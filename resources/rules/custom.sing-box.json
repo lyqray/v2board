@@ -23,15 +23,18 @@
                 "server": "local"
             },
             {
-                "rule_set": "geoip-cn",
-                "server": "direct"
-            },
-            {
                 "rule_set": [
+                	"geoip-cn",
                     "geosite-cn",
                     "geosite-private"
                 ],
                 "server": "direct"
+            },
+            {
+                "rule_set": [
+                	"geosite-geolocation-!cn"
+                ],
+                "server": "remote"
             }
         ],
         "servers": [
@@ -124,15 +127,18 @@
                 "outbound": "direct"
             },
             {
-                "rule_set": "geoip-cn",
-                "outbound": "direct"
-            },
-            {
                 "rule_set": [
+                	"geoip-cn",
                     "geosite-cn",
                     "geosite-private"
                 ],
                 "outbound": "direct"
+            },
+            {
+                "rule_set": [
+                	"geosite-geolocation-!cn"
+                ],
+                "outbound": "节点选择"
             },
 
             
@@ -194,6 +200,13 @@
         	    "type": "remote",
         	    "format": "binary",
         	    "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-private.srs",
+        	    "download_detour": "节点选择"
+            },
+            {
+        	    "tag": "geosite-geolocation-!cn",
+        	    "type": "remote",
+        	    "format": "binary",
+        	    "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
         	    "download_detour": "节点选择"
             }
         ]
