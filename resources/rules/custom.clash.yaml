@@ -664,27 +664,31 @@ rule-providers: # 自己加的第三方去广告规则集
   cn_domain:
     type: http
     behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.yaml"
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.yaml"
     path: ./provider/rule-set/cn_domain.yaml
     interval: 86400
+    proxy: $app_name
 
   private:
     type: http
     behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.yaml"
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.yaml"
     path: ./provider/rule-set/private.yaml
     interval: 86400
+    proxy: $app_name
 
   category-ads-all:
     type: http
     behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.yaml"
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.yaml"
     path: ./provider/rule-set/category-ads-all.yaml
     interval: 86400
+    proxy: $app_name
 
   geolocation-!cn:
     type: http
     behavior: domain
-    url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.yaml"
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.yaml"
     path: ./provider/rule-set/geolocation-!cn.yaml
     interval: 86400
+    proxy: $app_name
