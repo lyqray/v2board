@@ -199,7 +199,7 @@
         	    "tag": "geosite-private",
         	    "type": "remote",
         	    "format": "binary",
-        	    "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@ule-set/geosite-private.srs",
+        	    "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-private.srs",
         	    "download_detour": "节点选择"
             },
             {
