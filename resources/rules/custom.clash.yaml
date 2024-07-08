@@ -76,7 +76,7 @@ dns:
   #    - "https://dns.google/dns-query"
   #  "geosite:category-ads-all": rcode://success
   nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
-    "rule-set:cn_domain,private":
+    "rule-set:geoip_cn,geoip_private,geosite_cn,geosite_private":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
     "rule-set:geolocation-!cn":
