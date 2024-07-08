@@ -685,16 +685,16 @@ rules:
 rule-providers: # 自己加的第三方去广告规则集
   geoip_cn:
     type: http
-    behavior: ipcidr
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.yaml"
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/cn.yaml"
     path: ./provider/rule-set/geoip_cn.yaml
     interval: 86400
     proxy: $app_name
 
   geoip_private:
     type: http
-    behavior: ipcidr
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/private.yaml"
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/private.yaml"
     path: ./provider/rule-set/geoip_private.yaml
     interval: 86400
     proxy: $app_name
