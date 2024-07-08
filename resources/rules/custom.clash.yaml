@@ -79,10 +79,10 @@ dns:
     "rule-set:geoip_cn,geoip_private,geosite_cn,geosite_private":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
-    "rule-set:geolocation-!cn":
+    "rule-set:geosite_geolocation-!cn":
       - "https://dns.cloudflare.com/dns-query"
       - "https://dns.google/dns-query"
-    "rule-set:category-ads-all": rcode://success
+    "rule-set:geosite_category-ads-all": rcode://success
   # 当配置 fallback 时，会查询 nameserver 中返回的 IP 是否为 CN，非必要配置
   # 当不是 CN，则使用 fallback 中的 DNS 查询结果
   # 确保配置 fallback 时能够正常查询
