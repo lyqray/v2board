@@ -8,19 +8,18 @@
                 "server": "local"
             },
             {
-                "disable_cache": true,
+                "clash_mode": "全局",
+                "server": "remote"
+            },
+            {
+                "clash_mode": "直连",
+                "server": "local"
+            },
+            {
                 "rule_set": [
                     "geosite-category-ads-all"
                 ],
                 "server": "block"
-            },
-            {
-                "clash_mode": "global",
-                "server": "remote"
-            },
-            {
-                "clash_mode": "direct",
-                "server": "local"
             },
             {
                 "rule_set": [
@@ -62,6 +61,7 @@
             "path": ""
         },
         "clash_api": {
+        	  "default_mode": "规则",
             "external_controller": "127.0.0.1:9090",
             "secret": ""
         }
@@ -102,25 +102,49 @@
         }
     ],
     "outbounds": [
+        {
+            "type": "selector",
+            "tag": "节点选择",
+            "outbounds": [
+                "自动选择"
+            ]
+        },
+        {
+            "type": "urltest",
+            "tag": "自动选择",
+            "outbounds": []
+        },
+        {
+            "type": "dns",
+            "tag": "dns-out"
+        },
+        {
+            "type": "direct",
+            "tag": "direct"
+        },
+        {
+            "type": "block",
+            "tag": "block"
+        }
     ],
     "route": {
         "auto_detect_interface": true,
         "rules": [
             {
-                "rule_set": "geosite-category-ads-all",
-                "outbound": "block"
-            },
-            {
                 "outbound": "dns-out",
                 "protocol": "dns"
             },
             {
-                "clash_mode": "direct",
+                "clash_mode": "直连",
                 "outbound": "direct"
             },
             {
-                "clash_mode": "global",
+                "clash_mode": "全局",
                 "outbound": "节点选择"
+            },
+            {
+                "rule_set": "geosite-category-ads-all",
+                "outbound": "block"
             },
             {
                 "ip_is_private": true,
@@ -141,7 +165,7 @@
                 "outbound": "节点选择"
             },
 
-            
+
             {
             	"domain": [
             	 	"www.daniao.org",
@@ -172,6 +196,8 @@
             	],
             	"outbound": "节点选择"
             }
+
+
         ],
         "rule_set": [
             {
