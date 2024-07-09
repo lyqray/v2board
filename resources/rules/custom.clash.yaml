@@ -67,22 +67,22 @@ dns:
   nameserver:
     - https://doh.pub/dns-query
     - https://dns.alidns.com/dns-query
-  #nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（geox模式，二选一）
-  #  "geosite:cn,private":
-  #    - https://doh.pub/dns-query
-  #    - https://dns.alidns.com/dns-query
-  #  "geosite:geolocation-!cn":
-  #    - "https://dns.cloudflare.com/dns-query"
-  #    - "https://dns.google/dns-query"
-  #  "geosite:category-ads-all": rcode://success
-  nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
-    "rule-set:geoip_cn,geoip_private,geosite_cn,geosite_private":
+  nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（geox模式，二选一）
+    "geoip:cn,private":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
-    "rule-set:geosite_geolocation-!cn":
-      - "https://dns.cloudflare.com/dns-query"
-      - "https://dns.google/dns-query"
-    "rule-set:geosite_category-ads-all": rcode://success
+    "geosite:cn,private":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
+    "geosite:category-ads-all": rcode://success
+  #nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
+  #  "rule-set:geoip_cn,geoip_private,geosite_cn,geosite_private":
+  #    - https://doh.pub/dns-query
+  #    - https://dns.alidns.com/dns-query
+  #  "rule-set:geosite_geolocation-!cn":
+  #    - "https://dns.cloudflare.com/dns-query"
+  #    - "https://dns.google/dns-query"
+  #  "rule-set:geosite_category-ads-all": rcode://success
   # 当配置 fallback 时，会查询 nameserver 中返回的 IP 是否为 CN，非必要配置
   # 当不是 CN，则使用 fallback 中的 DNS 查询结果
   # 确保配置 fallback 时能够正常查询
@@ -669,64 +669,64 @@ rules:
   - DOMAIN-KEYWORD,-cn,DIRECT
 
   # 最终规则
-  #- GEOIP,CN,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
-  #- GEOIP,private,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
-  #- GEOSITE,cn,DIRECT # 自己加的geosite_cn直连
-  #- GEOSITE,private,DIRECT # 自己加的geosite_private直连
-  #- GEOSITE,category-ads-all,REJECT # 自己加的geosite去广告规则
-  - RULE-SET,geoip_cn,DIRECT,no-resolve # 自己加的rule-set
-  - RULE-SET,geoip_private,DIRECT,no-resolve # 自己加的rule-set
-  - RULE-SET,geosite_cn,DIRECT # 自己加的rule-set
-  - RULE-SET,geosite_private,DIRECT # 自己加的rule-set
-  - RULE-SET,geosite_category-ads-all,REJECT # 自己加的rule-set
-  - RULE-SET,geosite_geolocation-!cn,$app_name # 自己加的rule-set
+  - GEOIP,CN,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
+  - GEOIP,private,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
+  - GEOSITE,cn,DIRECT # 自己加的geosite_cn直连
+  - GEOSITE,private,DIRECT # 自己加的geosite_private直连
+  - GEOSITE,category-ads-all,REJECT # 自己加的geosite去广告规则
+  #- RULE-SET,geoip_cn,DIRECT,no-resolve # 自己加的rule-set
+  #- RULE-SET,geoip_private,DIRECT,no-resolve # 自己加的rule-set
+  #- RULE-SET,geosite_cn,DIRECT # 自己加的rule-set
+  #- RULE-SET,geosite_private,DIRECT # 自己加的rule-set
+  #- RULE-SET,geosite_category-ads-all,REJECT # 自己加的rule-set
+  #- RULE-SET,geosite_geolocation-!cn,$app_name # 自己加的rule-set
   - MATCH,$app_name
 
-rule-providers: # 自己加的第三方去广告规则集
-  geoip_cn:
-    type: http
-    behavior: classical
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/cn.yaml"
-    path: ./provider/rule-set/geoip_cn.yaml
-    interval: 86400
-    proxy: $app_name
+#rule-providers: # 自己加的第三方去广告规则集
+#  geoip_cn:
+#    type: http
+#    behavior: classical
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/cn.yaml"
+#    path: ./provider/rule-set/geoip_cn.yaml
+#    interval: 86400
+#    proxy: $app_name
 
-  geoip_private:
-    type: http
-    behavior: classical
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/private.yaml"
-    path: ./provider/rule-set/geoip_private.yaml
-    interval: 86400
-    proxy: $app_name
+#  geoip_private:
+#    type: http
+#    behavior: classical
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/classical/private.yaml"
+#    path: ./provider/rule-set/geoip_private.yaml
+#    interval: 86400
+#    proxy: $app_name
 
-  geosite_cn:
-    type: http
-    behavior: domain
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.yaml"
-    path: ./provider/rule-set/geosite_cn.yaml
-    interval: 86400
-    proxy: $app_name
+#  geosite_cn:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.yaml"
+#    path: ./provider/rule-set/geosite_cn.yaml
+#    interval: 86400
+#    proxy: $app_name
 
-  geosite_private:
-    type: http
-    behavior: domain
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.yaml"
-    path: ./provider/rule-set/geosite_private.yaml
-    interval: 86400
-    proxy: $app_name
+#  geosite_private:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.yaml"
+#    path: ./provider/rule-set/geosite_private.yaml
+#    interval: 86400
+#    proxy: $app_name
 
-  geosite_category-ads-all:
-    type: http
-    behavior: domain
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.yaml"
-    path: ./provider/rule-set/geosite_category-ads-all.yaml
-    interval: 86400
-    proxy: $app_name
+#  geosite_category-ads-all:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.yaml"
+#    path: ./provider/rule-set/geosite_category-ads-all.yaml
+#    interval: 86400
+#    proxy: $app_name
 
-  geosite_geolocation-!cn:
-    type: http
-    behavior: domain
-    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.yaml"
-    path: ./provider/rule-set/geosite_geolocation-!cn.yaml
-    interval: 86400
-    proxy: $app_name
+#  geosite_geolocation-!cn:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.yaml"
+#    path: ./provider/rule-set/geosite_geolocation-!cn.yaml
+#    interval: 86400
+#    proxy: $app_name
