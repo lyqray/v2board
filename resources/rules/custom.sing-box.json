@@ -29,7 +29,7 @@
                     "geosite-private",
                     "apple-cn"
                 ],
-                "server": "direct"
+                "server": "local"
             },
             {
                 "rule_set": [
