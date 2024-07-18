@@ -33,6 +33,7 @@
             },
             {
                 "rule_set": [
+                    "geoip-google",
                     "ip-tg",
                 	"geosite-tg",
                 	"geosite-geolocation-!cn"
@@ -249,6 +250,13 @@
         	    "type": "remote",
         	    "format": "binary",
         	    "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/apple-cn.srs",
+        	    "download_detour": "节点选择"
+            },
+            {
+        	    "tag": "geoip-google",
+        	    "type": "remote",
+        	    "format": "binary",
+        	    "url": "https://cdn.jsdelivr.net/gh/lyc8503/sing-box-rules@rule-set-geoip/geoip-google.srs",
         	    "download_detour": "节点选择"
             },
             {
