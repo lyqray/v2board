@@ -80,7 +80,10 @@ dns:
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
     "geosite:category-ads-all": rcode://success
-    "geosite:geolocation-!cn":
+    "geoip:google":
+      - "https://dns.cloudflare.com/dns-query"
+      - "https://dns.google/dns-query"
+    "geosite:google,geolocation-!cn":
       - "https://dns.cloudflare.com/dns-query"
       - "https://dns.google/dns-query"
   #nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
@@ -679,9 +682,11 @@ rules:
   # 最终规则
   - GEOIP,CN,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
   - GEOIP,private,DIRECT,no-resolve # 增加no-resolve（不先进行dns解析）
+  - GEOIP,google,$app_name,no-resolve # 自己加的geoip_google走代理
   - GEOSITE,cn,DIRECT # 自己加的geosite_cn直连
   - GEOSITE,private,DIRECT # 自己加的geosite_private直连
   - GEOSITE,category-ads-all,REJECT # 自己加的geosite去广告规则
+  - GEOSITE,google,$app_name # 自己加的geosite_google走代理
   - GEOSITE,geolocation-!cn,$app_name # 自己加的geosite非cn走代理
   #- RULE-SET,geoip_cn,DIRECT,no-resolve # 自己加的rule-set
   #- RULE-SET,geoip_private,DIRECT,no-resolve # 自己加的rule-set
