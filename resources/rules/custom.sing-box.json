@@ -23,7 +23,6 @@
             },
             {
                 "rule_set": [
-                	"geoip-cn",
                     "geosite-cn",
                     "geosite-private",
                     "apple-cn"
