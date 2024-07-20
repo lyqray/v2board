@@ -24,7 +24,6 @@
             {
                 "rule_set": [
                 	"geoip-cn",
-                    "ip-private",
                     "geosite-cn",
                     "geosite-private",
                     "apple-cn"
@@ -82,7 +81,7 @@
             "mtu": 9000,
             "sniff": true,
             "sniff_override_destination": true,
-            "stack": "system",
+            "stack": "gvisor",
             "strict_route": true,
             "type": "tun"
         },
@@ -149,7 +148,9 @@
                 "outbound": "节点选择"
             },
             {
-                "rule_set": "geosite-category-ads-all",
+                "rule_set": [
+                    "geosite-category-ads-all"
+                ],
                 "outbound": "block"
             },
             {
@@ -159,7 +160,6 @@
             {
                 "rule_set": [
                 	"geoip-cn",
-                    "ip-private",
                     "geosite-cn",
                     "geosite-private",
                     "apple-cn"
@@ -168,6 +168,7 @@
             },
             {
                 "rule_set": [
+                    "geoip-google",
                     "ip-tg",
                 	"geosite-tg",
                 	"geosite-geolocation-!cn"
@@ -222,13 +223,6 @@
                 "type": "remote",
                 "format": "binary",
                 "url": "https://cdn.jsdelivr.net/gh/SagerNet/sing-geoip@rule-set/geoip-cn.srs",
-                "download_detour": "节点选择"
-            },
-            {
-                "tag": "ip-private",
-                "type": "remote",
-                "format": "binary",
-                "url": "https://cdn.jsdelivr.net/gh/DustinWin/ruleset_geodata@sing-box-ruleset/privateip.srs",
                 "download_detour": "节点选择"
             },
             {
