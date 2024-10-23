@@ -6,13 +6,13 @@ use Adapterman\Adapterman;
 use Workerman\Worker;
 use Illuminate\Support\Facades\Cache;
 
-define('MAX_REQUEST', 6600);
+define('MAX_REQUEST', 6610);
 
 Adapterman::init();
 
 $ncpu = substr_count((string)@file_get_contents('/proc/cpuinfo'), "\nprocessor")+1;
 
-$http_worker                = new Worker('http://127.0.0.1:6600');
+$http_worker                = new Worker('http://127.0.0.1:6610');
 $http_worker->count         = $ncpu * 2;
 $http_worker->name          = 'AdapterMan';
 
