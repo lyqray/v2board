@@ -6,8 +6,6 @@ use App\Jobs\OrderHandleJob;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
-use App\Utils\CacheKey;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
@@ -208,6 +206,7 @@ class OrderService
         $orders = Order::where('user_id', $user->id)
             ->where('period', '!=', 'reset_price')
             ->where('period', '!=', 'onetime_price')
+            ->where('period', '!=', 'deposit')
             ->where('status', 3)
             ->get()
             ->toArray();
