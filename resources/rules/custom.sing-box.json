@@ -167,42 +167,42 @@
                 "tag": "geosite-geolocation-!cn",
                 "type": "remote",
                 "format": "binary",
-                "url": "https://dl.gtoo.cc/sing-rule404/geosite-geolocation-!cn.srs",
+                "url": "https://dl.gtoo.cc/404/rule-sing/geosite-geolocation-!cn.srs",
                 "download_detour": "DIRECT"
             },
             {
                 "tag": "geoip-cn",
                 "type": "remote",
                 "format": "binary",
-                "url": "https://dl.gtoo.cc/sing-rule404/geoip-cn.srs",
+                "url": "https://dl.gtoo.cc/404/rule-sing/geoip-cn.srs",
                 "download_detour": "DIRECT"
             },
             {
                 "tag": "geosite-cn",
                 "type": "remote",
                 "format": "binary",
-                "url": "https://dl.gtoo.cc/sing-rule404/geosite-cn.srs",
+                "url": "https://dl.gtoo.cc/404/rule-sing/geosite-cn.srs",
                 "download_detour": "DIRECT"
             },
             {
                 "tag": "category-ads-all",
                 "type": "remote",
                 "format": "binary",
-                "url": "https://dl.gtoo.cc/sing-rule404/geosite-category-ads-all.srs",
+                "url": "https://dl.gtoo.cc/404/rule-sing/geosite-category-ads-all.srs",
                 "download_detour": "DIRECT"
             },
             {
                 "tag": "geosite-private",
                 "type": "remote",
                 "format": "binary",
-                "url": "https://dl.gtoo.cc/sing-rule404/geosite-private.srs",
+                "url": "https://dl.gtoo.cc/404/rule-sing/geosite-private.srs",
                 "download_detour": "DIRECT"
             },
             {
                 "tag": "geosite-apple@cn",
                 "type": "remote",
                 "format": "binary",
-                "url": "https://dl.gtoo.cc/sing-rule404/geosite-apple@cn.srs",
+                "url": "https://dl.gtoo.cc/404/rule-sing/geosite-apple@cn.srs",
                 "download_detour": "DIRECT"
             }
         ]
