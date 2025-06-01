@@ -144,6 +144,8 @@ rules:
   - DOMAIN,www.idcoffer.com,DIRECT # 修复某些屏蔽外国的IDC网站
   - DOMAIN,www.dogyun.com,DIRECT # 修复某些屏蔽外国的IDC网站
 
+  - DOMAIN-SUFFIX,deepseek.com,$app_name # DeepSeek登录页面识别成海外版
+
   - DOMAIN,www.coze.com,$app_name # 用户需求
 
   # Google 中国服务
