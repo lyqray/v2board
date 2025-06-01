@@ -131,18 +131,6 @@
 				"action": "route",
                 "outbound": "节点选择"
             },
-            {
-                "rule_set": [
-                    "geosite-cn","geoip-cn","geosite-private","geosite-apple@cn"
-                ],
-                "action": "route",
-                "outbound": "direct"
-            },
-            {
-                "ip_is_private": true,
-                "action": "route",
-                "outbound": "direct"
-            },
             
             {
                 "domain": [
@@ -171,12 +159,12 @@
             	     "www.coze.com"
                 ],
                 "domain_suffix": [
-            	     "coze.com"
+            	     "deepseek.com"
                 ],
                 "action": "route",
                 "outbound": "节点选择"
             },
-			
+            
             {
                 "rule_set": [
                     "category-ads-all"
@@ -184,6 +172,18 @@
                 "action": "reject",
                 "method": "default",
                 "no_drop": false
+            },
+            {
+                "ip_is_private": true,
+                "action": "route",
+                "outbound": "direct"
+            },
+            {
+                "rule_set": [
+                    "geosite-cn","geoip-cn","geosite-private","geosite-apple@cn"
+                ],
+                "action": "route",
+                "outbound": "direct"
             }
         ],
         "auto_detect_interface": true,
