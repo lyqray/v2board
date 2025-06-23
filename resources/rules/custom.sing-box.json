@@ -14,9 +14,22 @@
                 "type": "udp",
                 "tag": "cn",
                 "server": "223.5.5.5"
+            },
+            {
+                "type": "fakeip",
+                "tag": "fakeip",
+                "inet4_range": "198.18.0.0/15",
+                "inet6_range": "fc00::/18"
             }
         ],
         "rules": [
+            {
+                "query_type": [
+                    "A",
+                    "AAAA"
+                ],
+                "server": "fakeip"
+            },
             {
                 "rule_set": [
                     "geosite-cn","geosite-private","geosite-apple@cn"
