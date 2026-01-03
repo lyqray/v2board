@@ -7,116 +7,129 @@ allow-lan: true
 bind-address: "*"
 mode: rule
 log-level: info
+ipv6: true
 external-controller: 127.0.0.1:9090
 
-#自定义 geodata url
+# 自定义 geodata url
 geox-url:
   geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
   geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
-  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb"
+  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.mmdb"
+  asn: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
+geo-auto-update: false  # 是否自动更新 geodata
+geo-update-interval: 24  # 更新间隔，单位：小时
 
-geo-auto-update: false # 是否自动更新 geodata
-geo-update-interval: 24 # 更新间隔，单位：小时
-
-tun: # 自己增加的tun模块
+tun:  # 自己增加的tun模块
   enable: true
-  stack: system # system/gvisor/mixed
+  stack: system  # system/gvisor/mixed
+  device: utun0
   dns-hijack:
     - "any:53"
     - "tcp://any:53"
-  auto-route: true
-  auto-detect-interface: true
-  strict-route: true
 
-sniffer: # 自己增加的域名嗅探模块
-  enable: true # 嗅探开关
+sniffer:  # 自己增加的域名嗅探模块
+  enable: true
   force-dns-mapping: true
   parse-pure-ip: true
-  override-destination: false # 全局配置，优先级低于 sniffer.sniff 实际配置
-  sniff: # TLS 和 QUIC 默认如果不配置 ports 默认嗅探 443
+  override-destination: false  # 全局配置，优先级低于 sniffer.sniff 实际配置
+  sniff:  # TLS 和 QUIC 默认如果不配置 ports 默认嗅探 443
     HTTP:
       ports: [80, 8080-8880]
-      override-destination: true # 可覆盖 sniffer.override-destination
+      override-destination: true  # 可覆盖 sniffer.override-destination
     TLS:
       ports: [443, 8443]
+      override-destination: true
     QUIC:
       ports: [443, 8443]
-  force-domain: # 需要强制嗅探的域名，默认只对IP嗅探
-    #- '+'      # 去掉注释后等于全局嗅探（除了skip-domain中的内容跳过）
-    - 'google.com'
-    - '*.netflix.com.com'
+  force-domain:  # 需要强制嗅探的域名，默认只对IP嗅探
+    # - '+'      # 去掉注释后等于全部域名嗅探
     - +.v2ex.com
-  skip-domain: # 列表中的sni字段，保留mapping结果，不通过嗅探还原域名，优先级比force-domain高
+    - +.google.com'
+    - +.youtube.com
+  skip-domain:  # 对嗅探结果进行跳过
+    - '*.lan'
+    - '+.local'
     - 'Mijia Cloud'
     - '+.apple.com'
 
 dns:
   enable: true
+  cache-algorithm: arc
+  # prefer-h3: false  # DOH 优先使用 http/3
   # listen: 0.0.0.0:53
-  ipv6: false
-
+  ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-filter: # 当下列条件匹配，不使用fake-ip
-    #- "+.*" # 全局回退，取消注释等于使用redir-host模式
-    - "*"
-    - "+.lan"
-    - "+.local"
-    - "+.msftconnecttest.com"
-    - "+.msftncsi.com"
-    - "localhost.ptlogin2.qq.com"
-    - "localhost.sec.qq.com"
-    - "localhost.work.weixin.qq.com"
-  use-hosts: true
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-filter:  # 当下列条件匹配，不使用fake-ip
+    # - "+.*"  # 全局回退，取消注释等于使用redir-host模式
+    - '*.lan'
+    - '+.local'
+    - '+.msftconnecttest.com'
+    - '+.msftncsi.com'
+    - localhost.ptlogin2.qq.com
+    - localhost.sec.qq.com
+    - localhost.work.weixin.qq.com
+    - "geosite:private"
+
+  # 必须为纯数字 IP, 可为加密 DNS，用于解析 DNS 服务器的域名（DoH）
   default-nameserver:
     - 223.5.5.5
     - 119.29.29.29
     - 114.114.114.114
-  respect-rules: true # 该项若启用，proxy-server-nameserver不能为空
+
+  respect-rules: true  # 该项若启用，proxy-server-nameserver不能为空。强烈不建议和 prefer-h3 一起使用
+  # 专用于节点域名解析的 DNS 服务器，非必要配置项，如果不填则遵循nameserver-policy、nameserver和fallback的配置
   proxy-server-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 114.114.114.114
-  nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 114.114.114.114
-  nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（geox模式，二选一）
-    "geoip:cn,private":
-      - https://doh.pub/dns-query
-      - https://dns.alidns.com/dns-query
+    - tls://dot.pub
+    - tls://dns.alidns.com
+
+  # 专用于direct出口域名解析的 DNS 服务器，非必要配置项，如果不填则遵循nameserver-policy、nameserver和fallback的配置
+  direct-nameserver:
+    - system
+  # 是否遵循nameserver-policy，默认为不遵守，仅当direct-nameserver不为空时生效
+  direct-nameserver-follow-policy: false
+
+  nameserver-policy:  # 指定域名查询的解析服务器，可使用 geosite, 优先于 nameserver/fallback 查询
     "geosite:cn,private":
       - https://doh.pub/dns-query
       - https://dns.alidns.com/dns-query
     "geosite:category-ads-all": rcode://success
-    "geoip:google":
-      - "https://dns.cloudflare.com/dns-query"
-      - "https://dns.google/dns-query"
-    "geosite:google,geolocation-!cn":
-      - "https://dns.cloudflare.com/dns-query"
-      - "https://dns.google/dns-query"
+    "geosite:google,youtube,geolocation-!cn":
+      - https://dns.cloudflare.com/dns-query
+      - https://dns.google/dns-query
   #nameserver-policy: # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
-  #  "rule-set:geoip_cn,geoip_private,geosite_cn,geosite_private":
+  #  "rule-set:geosite_cn,geosite_private":
   #    - https://doh.pub/dns-query
   #    - https://dns.alidns.com/dns-query
   #  "rule-set:geosite_category-ads-all": rcode://success
   #  "rule-set:geosite_geolocation-!cn":
-  #    - "https://dns.cloudflare.com/dns-query"
-  #    - "https://dns.google/dns-query"
+  #    - https://dns.cloudflare.com/dns-query
+  #    - https://dns.google/dns-query
+
+  # 默认的域名解析服务器（未匹配到规则的目标域名默认使用这个来解析）
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 114.114.114.114
+    - 1.1.1.1
+    - 8.8.8.8
   # 当配置 fallback 时，会查询 nameserver 中返回的 IP 是否为 CN，非必要配置
-  # 当不是 CN，则使用 fallback 中的 DNS 查询结果
-  # 确保配置 fallback 时能够正常查询
+  # 当不是 CN，则使用 fallback 中的 DNS 查询结果（一般情况下使用境外 DNS, 保证结果可信）
   fallback:
     - 1.1.1.1
     - 8.8.8.8
-  fallback-filter: # 当下列条件匹配，不使用fallback的dns查询结果
-    geoip: true # 配置是否使用 geoip
-    geoip-code: CN
-    geosite:
+    - tls://1.1.1.1
+    - tls://8.8.8.8
+  # 配置 fallback 使用条件
+  fallback-filter:
+    geoip: true  # 是否启用 geoip 判断
+    geoip-code: CN  # 当 nameserver 域名的 IP 查询 geoip 库为 CN 时，不使用 fallback 中的 DNS 查询结果
+    geosite:  # 与 geoip 不同，命中则使用 fallback 中的 DNS 查询结果
       - gfw
-    ipcidr:
+    ipcidr:  # 命中则使用 fallback 中的 DNS 查询结果
       - 240.0.0.0/4
-    domain:
+    domain:  # 命中则使用 fallback 中的 DNS 查询结果
       - '+.google.com'
       - '+.facebook.com'
       - '+.youtube.com'
@@ -155,6 +168,38 @@ rules:
   # Apple
   - DOMAIN,safebrowsing.urlsec.qq.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
   - DOMAIN,safebrowsing.googleapis.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
+
+  # TikTok
+  - DOMAIN,lf16-effectcdn.byteeffecttos-g.com,$app_name
+  - DOMAIN,lf16-pkgcdn.pitaya-clientai.com,$app_name
+  - DOMAIN,p16-tiktokcdn-com.akamaized.net,$app_name
+  - DOMAIN-SUFFIX,bytedapm.com,$app_name
+  - DOMAIN-SUFFIX,bytegecko-i18n.com,$app_name
+  - DOMAIN-SUFFIX,byteoversea.com,$app_name
+  - DOMAIN-SUFFIX,capcut.com,$app_name
+  - DOMAIN-SUFFIX,ibytedtos.com,$app_name
+  - DOMAIN-SUFFIX,ibyteimg.com,$app_name
+  - DOMAIN-SUFFIX,ipstatp.com,$app_name
+  - DOMAIN-SUFFIX,isnssdk.com,$app_name
+  - DOMAIN-SUFFIX,muscdn.com,$app_name
+  - DOMAIN-SUFFIX,musical.ly,$app_name
+  - DOMAIN-SUFFIX,sgpstatp.com,$app_name
+  - DOMAIN-SUFFIX,snssdk.com,$app_name
+  - DOMAIN-SUFFIX,tik-tokapi.com,$app_name
+  - DOMAIN-SUFFIX,tiktok.com,$app_name
+  - DOMAIN-SUFFIX,tiktokcdn-us.com,$app_name
+  - DOMAIN-SUFFIX,tiktokcdn.com,$app_name
+  - DOMAIN-SUFFIX,tiktokd.net,$app_name
+  - DOMAIN-SUFFIX,tiktokd.org,$app_name
+  - DOMAIN-SUFFIX,tiktokmusic.app,$app_name
+  - DOMAIN-SUFFIX,tiktokv.com,$app_name
+  - DOMAIN-SUFFIX,tiktokv.us,$app_name
+  - DOMAIN-SUFFIX,ttwebview.com,$app_name
+  - DOMAIN-KEYWORD,musical.ly,$app_name
+  - DOMAIN-KEYWORD,tiktok,$app_name
+  - PROCESS-NAME,com.zhiliaoapp.musically,$app_name
+  # TikTok
+  
   - DOMAIN,developer.apple.com,$app_name
   - DOMAIN-SUFFIX,digicert.com,$app_name
   - DOMAIN,ocsp.apple.com,$app_name
