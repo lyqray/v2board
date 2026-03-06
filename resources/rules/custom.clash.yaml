@@ -1,0 +1,577 @@
+# port: 7890
+# socks-port: 7891
+# redir-port: 7892
+# tproxy-port: 7893
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+lan-allowed-ips:
+  # - 0.0.0.0/8
+  - 10.0.0.0/8
+  - 127.0.0.0/8
+  - 169.254.0.0/16
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  - 100.64.0.0/10
+  - 192.0.0.0/24
+  - 192.0.2.0/24
+  - 192.88.99.0/24
+  - 198.18.0.0/15
+  - 198.51.100.0/24
+  - 203.0.113.0/24
+  - 224.0.0.0/4
+  - 233.252.0.0/24
+  - 240.0.0.0/4
+  - 255.255.255.255/32
+  # - "::/128"
+  - "::1/128"
+  - "fe80::/10"
+  - "fc00::/7"
+  - "ff00::/8"
+  - "2001:db8::/32"
+mode: rule
+log-level: info
+ipv6: true
+external-controller: 127.0.0.1:9090
+
+# 更改 geoip 使用文件，mmdb 或者 dat，可选 true/false，true为 dat，此项有默认值 false
+geodata-mode: false  # mmdb 性能更好占用更小
+# 自定义 geodata url
+geox-url:
+  geoip: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.metadb"
+  asn: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
+geo-auto-update: true  # 是否自动更新 geodata
+geo-update-interval: 168  # 更新间隔，单位：小时
+
+tun:  # 自己增加的tun模块
+  enable: true
+  stack: system  # system/gvisor/mixed
+  device: utun0
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: true
+  dns-hijack:
+    - any:53
+    - tcp://any:53
+  route-exclude-address:
+    # - 0.0.0.0/8
+    - 10.0.0.0/8
+    # - 127.0.0.0/8
+    - 169.254.0.0/16
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 100.64.0.0/10
+    - 192.0.0.0/24
+    - 192.0.2.0/24
+    - 192.88.99.0/24
+    # - 198.18.0.0/15
+    - 198.51.100.0/24
+    - 203.0.113.0/24
+    - 224.0.0.0/4
+    - 233.252.0.0/24
+    - 240.0.0.0/4
+    - 255.255.255.255/32
+    # - "::/128"
+    # - "::1/128"
+    - "fe80::/10"
+    # - "fc00::/7"
+    - "ff00::/8"
+    - "2001:db8::/32"
+
+sniffer:  # 自己增加的域名嗅探模块
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: false  # 全局配置，优先级低于 sniffer.sniff 实际配置
+  sniff:  # TLS 和 QUIC 默认如果不配置 ports 默认嗅探 443
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true  # 可覆盖 sniffer.override-destination
+    TLS:
+      ports: [443, 8443]
+      override-destination: true
+    QUIC:
+      ports: [443, 8443]
+  force-domain:  # 需要强制嗅探的域名，默认只对IP嗅探
+    # - '+'      # 去掉注释后等于全部域名嗅探
+    - '+.v2ex.com'
+    - '+.google.com'
+    - '+.youtube.com'
+    - '+.tiktok.com'
+    - '+.telegram.org'
+  skip-domain:  # 对嗅探结果进行跳过
+    - '*.lan'
+    - '*.local'
+    - '*.localhost'
+    - '*.home.arpa'
+    - '+.cn'
+    - Mijia Cloud
+    - '+.oray.com'
+    - '+.sunlogin.net'
+    - '+.todesk.com'
+  skip-src-address:
+    # - 0.0.0.0/8
+    - 10.0.0.0/8
+    # - 127.0.0.0/8
+    - 169.254.0.0/16
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 100.64.0.0/10
+    - 192.0.0.0/24
+    - 192.0.2.0/24
+    - 192.88.99.0/24
+    # - 198.18.0.0/15
+    - 198.51.100.0/24
+    - 203.0.113.0/24
+    - 224.0.0.0/4
+    - 233.252.0.0/24
+    - 240.0.0.0/4
+    - 255.255.255.255/32
+    # - "::/128"
+    # - "::1/128"
+    - "fe80::/10"
+    # - "fc00::/7"
+    - "ff00::/8"
+    - "2001:db8::/32"
+  skip-dst-address:
+    # - 0.0.0.0/8
+    - 10.0.0.0/8
+    # - 127.0.0.0/8
+    - 169.254.0.0/16
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+    - 100.64.0.0/10
+    - 192.0.0.0/24
+    - 192.0.2.0/24
+    - 192.88.99.0/24
+    # - 198.18.0.0/15
+    - 198.51.100.0/24
+    - 203.0.113.0/24
+    - 224.0.0.0/4
+    - 233.252.0.0/24
+    - 240.0.0.0/4
+    - 255.255.255.255/32
+    # - "::/128"
+    # - "::1/128"
+    - "fe80::/10"
+    # - "fc00::/7"
+    - "ff00::/8"
+    - "2001:db8::/32"
+
+dns:
+  enable: true
+  cache-algorithm: arc
+  # prefer-h3: false  # 是否开启 DoH 支持 HTTP/3，将并发尝试
+  # listen: 0.0.0.0:53  # 开启 DNS 服务器监听
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-filter:  # 当下列条件匹配，不使用fake-ip
+    # - "+.*"  # 全局回退，取消注释等于使用redir-host模式
+    - '*.lan'
+    - '*.local'
+    - '*.localhost'
+    - '*.home.arpa'
+    - '+.cn'
+    - '+.msftconnecttest.com'
+    - '+.msftncsi.com'
+    - localhost.ptlogin2.qq.com
+    - localhost.sec.qq.com
+    - localhost.work.weixin.qq.com
+    - "geosite:private"
+    - "geosite:cn"
+    # - "rule-set:geosite_private"
+    # - "rule-set:geosite_cn"
+
+  # 必须为纯数字 IP, 可为加密 DNS，用于解析 DNS 服务器的域名（DoH）
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 114.114.114.114
+
+  respect-rules: true  # 该项若启用，proxy-server-nameserver不能为空。强烈不建议和 prefer-h3 一起使用
+  # 专用于节点域名解析的 DNS 服务器，非必要配置项，如果不填则遵循nameserver-policy、nameserver和fallback的配置
+  proxy-server-nameserver:
+    # - 1.1.1.1
+    # - 8.8.8.8
+    # - tls://1.1.1.1:853
+    # - tls://8.8.8.8:853
+    # - https://dns.cloudflare.com/dns-query
+    # - https://dns.google/dns-query
+    # - 223.5.5.5
+    # - 119.29.29.29
+    # - tls://223.5.5.5:853
+    # - tls://119.29.29.29:853
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+
+  # 专用于direct出口域名解析的 DNS 服务器，非必要配置项，如果不填则遵循nameserver-policy、nameserver和fallback的配置
+  direct-nameserver:
+    - system
+  # 是否遵循nameserver-policy，默认为不遵守，仅当direct-nameserver不为空时生效
+  direct-nameserver-follow-policy: false
+
+  nameserver-policy:  # 指定域名查询的解析服务器，可使用 geosite, 优先于 nameserver/fallback 查询
+    "+.googleapis.cn,+.googleapis.com,+.xn--ngstr-lra8j.com,+.xn--ngstr-cn-8za9o.com": 
+      - 1.1.1.1
+      - 8.8.8.8
+    "geosite:private":
+      - system
+    "geosite:cn,geolocation-cn":
+      - 223.5.5.5
+      - 119.29.29.29
+    "geosite:category-ads-all":
+      - rcode://success
+    "geosite:google,youtube,tiktok,telegram":
+      - 1.1.1.1
+      - 8.8.8.8
+  #nameserver-policy:  # 配置查询域名专门使用的 DNS 服务器（rule-set模式，二选一）
+  #  "+.googleapis.cn,+.googleapis.com,+.xn--ngstr-lra8j.com,+.xn--ngstr-cn-8za9o.com": 
+  #    - 1.1.1.1
+  #    - 8.8.8.8
+  #  "rule-set:geosite_private":
+  #    - system
+  #  "rule-set:geosite_cn,geosite_geolocation-cn":
+  #    - 223.5.5.5
+  #    - 119.29.29.29
+  #  "rule-set:geosite_category-ads-all":
+  #    - rcode://success
+  #  "rule-set:geosite_google,geosite_youtube,geosite_tiktok,geosite_telegram":
+  #    - 1.1.1.1
+  #    - 8.8.8.8
+
+  # 默认的域名解析服务器（未匹配到规则的目标域名默认使用这个来解析）
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - 114.114.114.114
+    - 1.1.1.1
+    - 8.8.8.8
+  # 当配置 fallback 时，会查询 nameserver 中返回的 IP 是否为 CN，非必要配置
+  # 当不是 CN，则使用 fallback 中的 DNS 查询结果（一般情况下使用境外 DNS, 保证结果可信）
+  fallback:
+    - 1.1.1.1
+    - 8.8.8.8
+  # 配置 fallback 使用条件
+  fallback-filter:
+    geoip: true  # 是否启用 geoip 判断
+    geoip-code: CN  # 当 nameserver 域名的 IP 查询 geoip 库为 CN 时，不使用 fallback 中的 DNS 查询结果
+    geosite:  # 与 geoip 不同，命中则使用 fallback 中的 DNS 查询结果
+      - gfw
+    ipcidr:  # 命中则使用 fallback 中的 DNS 查询结果
+      - 240.0.0.0/4
+    domain:  # 命中则使用 fallback 中的 DNS 查询结果
+      - '+.google.com'
+      - '+.youtube.com'
+      - '+.tiktok.com'
+      - '+.telegram.org'
+
+proxies:
+
+proxy-groups:
+  - { name: "$app_name", type: select, proxies: ["自动选择", "故障转移"] }
+  - { name: "自动选择", type: url-test, proxies: [], url: "http://www.gstatic.com/generate_204", interval: 86400 }
+  - { name: "故障转移", type: fallback, proxies: [], url: "http://www.gstatic.com/generate_204", interval: 7200 }
+
+rules:
+  # 自定义规则
+  ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
+  - IP-CIDR,1.1.1.1/32,$app_name,no-resolve
+  - IP-CIDR,8.8.8.8/32,$app_name,no-resolve
+
+######################### 自定义 #########################
+  # 解决群晖代理后ddns获取公网ip失败问题
+  - DOMAIN,checkip.synology.com,DIRECT
+  - DOMAIN,checkipv6.synology.com,DIRECT
+  - DOMAIN,checkport.synology.com,DIRECT
+  - DOMAIN,ddns.synology.com,DIRECT
+  - DOMAIN,account.synology.com,DIRECT
+
+  # 小红花音效助手 + 淘乐计票工具 直连
+  - DOMAIN-SUFFIX,lonlonsoft.com,DIRECT
+  - DOMAIN-SUFFIX,xddck.com,DIRECT
+  - DOMAIN-KEYWORD,xhhyx,DIRECT
+  - DOMAIN-SUFFIX,taole88.cn,DIRECT
+  - DOMAIN-KEYWORD,taole88,DIRECT
+
+  # 向日葵 + todesk远程工具 直连
+  - DOMAIN-SUFFIX,oray.com,DIRECT
+  - DOMAIN-SUFFIX,sunlogin.net,DIRECT
+  - DOMAIN-SUFFIX,todesk.com,DIRECT
+
+  # 修复某些屏蔽外国的IDC网站
+  - DOMAIN,www.daniao.org,DIRECT
+  - DOMAIN,www.idcoffer.com,DIRECT
+  - DOMAIN,www.dogyun.com,DIRECT
+
+  # Google Play
+  - DOMAIN-SUFFIX,googleapis.cn,$app_name
+  - DOMAIN-SUFFIX,googleapis.com,$app_name
+  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,$app_name
+  - DOMAIN-SUFFIX,xn--ngstr-cn-8za9o.com,$app_name
+
+  # 强制DeepSeek登录页面识别成海外版
+  - DOMAIN-SUFFIX,deepseek.com,$app_name
+
+  # TikTok
+  - DOMAIN,lf16-effectcdn.byteeffecttos-g.com,$app_name
+  - DOMAIN,lf16-pkgcdn.pitaya-clientai.com,$app_name
+  - DOMAIN,p16-tiktokcdn-com.akamaized.net,$app_name
+  - DOMAIN,trae-api-sg.mchost.guru,$app_name
+  - DOMAIN-SUFFIX,bytedapm.com,$app_name
+  - DOMAIN-SUFFIX,bytegecko-i18n.com,$app_name
+  - DOMAIN-SUFFIX,byteintlapi.com,$app_name
+  - DOMAIN-SUFFIX,byteoversea.com,$app_name
+  - DOMAIN-SUFFIX,capcut.com,$app_name
+  - DOMAIN-SUFFIX,ibytedtos.com,$app_name
+  - DOMAIN-SUFFIX,ibyteimg.com,$app_name
+  - DOMAIN-SUFFIX,ipstatp.com,$app_name
+  - DOMAIN-SUFFIX,isnssdk.com,$app_name
+  - DOMAIN-SUFFIX,marscode.com,$app_name
+  - DOMAIN-SUFFIX,muscdn.com,$app_name
+  - DOMAIN-SUFFIX,musical.ly,$app_name
+  - DOMAIN-SUFFIX,sgpstatp.com,$app_name
+  - DOMAIN-SUFFIX,snssdk.com,$app_name
+  - DOMAIN-SUFFIX,tik-tokapi.com,$app_name
+  - DOMAIN-SUFFIX,tiktok.com,$app_name
+  - DOMAIN-SUFFIX,tiktokcdn-us.com,$app_name
+  - DOMAIN-SUFFIX,tiktokcdn.com,$app_name
+  - DOMAIN-SUFFIX,tiktokd.net,$app_name
+  - DOMAIN-SUFFIX,tiktokd.org,$app_name
+  - DOMAIN-SUFFIX,tiktokmusic.app,$app_name
+  - DOMAIN-SUFFIX,tiktokv.com,$app_name
+  - DOMAIN-SUFFIX,tiktokv.us,$app_name
+  - DOMAIN-SUFFIX,trae.ai,$app_name
+  - DOMAIN-SUFFIX,ttwebview.com,$app_name
+  - DOMAIN-KEYWORD,musical.ly,$app_name
+  - DOMAIN-KEYWORD,tiktok,$app_name
+  - PROCESS-NAME,com.zhiliaoapp.musically,$app_name
+
+  # Telegram（2026.1.11更新）
+  - IP-CIDR,91.105.192.0/23,$app_name,no-resolve
+  - IP-CIDR,91.108.4.0/22,$app_name,no-resolve
+  - IP-CIDR,91.108.8.0/21,$app_name,no-resolve
+  - IP-CIDR,91.108.16.0/21,$app_name,no-resolve
+  - IP-CIDR,91.108.56.0/22,$app_name,no-resolve
+  - IP-CIDR,95.161.64.0/20,$app_name,no-resolve
+  - IP-CIDR,149.154.160.0/20,$app_name,no-resolve
+  - IP-CIDR,185.76.151.0/24,$app_name,no-resolve
+  - IP-CIDR6,2001:67c:4e8::/48,$app_name,no-resolve
+  - IP-CIDR6,2001:b28:f23c::/47,$app_name,no-resolve
+  - IP-CIDR6,2001:b28:f23f::/48,$app_name,no-resolve
+  - IP-CIDR6,2a0a:f280::/32,$app_name,no-resolve
+  - DOMAIN-SUFFIX,cdn-telegram.org,$app_name
+  - DOMAIN-SUFFIX,comments.app,$app_name
+  - DOMAIN-SUFFIX,contest.com,$app_name
+  - DOMAIN-SUFFIX,fragment.com,$app_name
+  - DOMAIN-SUFFIX,graph.org,$app_name
+  - DOMAIN-SUFFIX,quiz.directory,$app_name
+  - DOMAIN-SUFFIX,t.me,$app_name
+  - DOMAIN-SUFFIX,tdesktop.com,$app_name
+  - DOMAIN-SUFFIX,telega.one,$app_name
+  - DOMAIN-SUFFIX,telegra.ph,$app_name
+  - DOMAIN-SUFFIX,telegram-cdn.org,$app_name
+  - DOMAIN-SUFFIX,telegram.dog,$app_name
+  - DOMAIN-SUFFIX,telegram.me,$app_name
+  - DOMAIN-SUFFIX,telegram.org,$app_name
+  - DOMAIN-SUFFIX,telegram.space,$app_name
+  - DOMAIN-SUFFIX,telesco.pe,$app_name
+  - DOMAIN-SUFFIX,tg.dev,$app_name
+  - DOMAIN-SUFFIX,tx.me,$app_name
+  - DOMAIN-SUFFIX,usercontent.dev,$app_name
+######################### 自定义 #########################
+
+  # 抗 DNS 污染
+  - DOMAIN-KEYWORD,amazon,$app_name
+  - DOMAIN-KEYWORD,google,$app_name
+  - DOMAIN-KEYWORD,gmail,$app_name
+  - DOMAIN-KEYWORD,youtube,$app_name
+  - DOMAIN-KEYWORD,facebook,$app_name
+  - DOMAIN-SUFFIX,fb.me,$app_name
+  - DOMAIN-SUFFIX,fbcdn.net,$app_name
+  - DOMAIN-KEYWORD,twitter,$app_name
+  - DOMAIN-KEYWORD,instagram,$app_name
+  - DOMAIN-KEYWORD,dropbox,$app_name
+  - DOMAIN-SUFFIX,twimg.com,$app_name
+  - DOMAIN-KEYWORD,blogspot,$app_name
+  - DOMAIN-SUFFIX,youtu.be,$app_name
+  - DOMAIN-KEYWORD,whatsapp,$app_name
+
+  # 常见广告域名屏蔽
+  - DOMAIN-KEYWORD,admarvel,REJECT
+  - DOMAIN-KEYWORD,admaster,REJECT
+  - DOMAIN-KEYWORD,adsage,REJECT
+  - DOMAIN-KEYWORD,adsmogo,REJECT
+  - DOMAIN-KEYWORD,adsrvmedia,REJECT
+  - DOMAIN-KEYWORD,adwords,REJECT
+  - DOMAIN-KEYWORD,adservice,REJECT
+  - DOMAIN-SUFFIX,appsflyer.com,REJECT
+  - DOMAIN-KEYWORD,domob,REJECT
+  - DOMAIN-SUFFIX,doubleclick.net,REJECT
+  - DOMAIN-KEYWORD,duomeng,REJECT
+  - DOMAIN-KEYWORD,dwtrack,REJECT
+  - DOMAIN-KEYWORD,guanggao,REJECT
+  - DOMAIN-KEYWORD,lianmeng,REJECT
+  - DOMAIN-SUFFIX,mmstat.com,REJECT
+  - DOMAIN-KEYWORD,mopub,REJECT
+  - DOMAIN-KEYWORD,omgmta,REJECT
+  - DOMAIN-KEYWORD,openx,REJECT
+  - DOMAIN-KEYWORD,partnerad,REJECT
+  - DOMAIN-KEYWORD,pingfore,REJECT
+  - DOMAIN-KEYWORD,supersonicads,REJECT
+  - DOMAIN-KEYWORD,uedas,REJECT
+  - DOMAIN-KEYWORD,umeng,REJECT
+  - DOMAIN-KEYWORD,usage,REJECT
+  - DOMAIN-SUFFIX,vungle.com,REJECT
+  - DOMAIN-KEYWORD,wlmonitor,REJECT
+  - DOMAIN-KEYWORD,zjtoolbar,REJECT
+
+  # LAN
+  - DOMAIN,injections.adguard.org,DIRECT
+  - DOMAIN,local.adguard.org,DIRECT
+  - DOMAIN-SUFFIX,local,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR,17.0.0.0/8,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR,224.0.0.0/4,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - IP-CIDR6,fe80::/10,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+
+  # 剩余未匹配的国内网站
+  - DOMAIN-SUFFIX,cn,DIRECT
+  - DOMAIN-KEYWORD,-cn,DIRECT
+
+  # 最终规则
+  - GEOIP,private,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - GEOIP,CN,DIRECT,no-resolve  # 增加no-resolve（不先进行dns解析）
+  - GEOSITE,private,DIRECT  # 自己加的geosite_private直连
+  - GEOSITE,cn,DIRECT  # 自己加的geosite_cn直连
+  - GEOSITE,geolocation-cn,DIRECT  # 自己加的geosite_geolocation-cn直连
+
+  - GEOSITE,category-ads-all,REJECT  # 自己加的geosite去广告规则
+
+  - GEOIP,google,$app_name,no-resolve  # 自己加的geoip_google走代理
+  - GEOIP,telegram,$app_name,no-resolve  # 自己加的geoip_telegram走代理
+  - GEOSITE,google,$app_name  # 自己加的geosite_google走代理
+  - GEOSITE,youtube,$app_name  # 自己加的geosite_youtube走代理
+  - GEOSITE,tiktok,$app_name  # 自己加的geosite_tiktok走代理
+  - GEOSITE,telegram,$app_name  # 自己加的geosite_telegram走代理
+  - MATCH,$app_name
+
+  # - RULE-SET,geoip_private,DIRECT,no-resolve  # 自己加的rule-set
+  # - RULE-SET,geoip_cn,DIRECT,no-resolve  # 自己加的rule-set
+  # - RULE-SET,geosite_private,DIRECT  # 自己加的rule-set
+  # - RULE-SET,geosite_cn,DIRECT  # 自己加的rule-set
+  # - RULE-SET,geosite_geolocation-cn,DIRECT  # 自己加的rule-set
+
+  # - RULE-SET,geosite_category-ads-all,REJECT  # 自己加的rule-set
+
+  # - RULE-SET,geoip_google,$app_name,no-resolve  # 自己加的rule-set
+  # - RULE-SET,geoip_telegram,$app_name,no-resolve  # 自己加的rule-set
+  # - RULE-SET,geosite_google,$app_name  # 自己加的rule-set
+  # - RULE-SET,geosite_youtube,$app_name  # 自己加的rule-set
+  # - RULE-SET,geosite_tiktok,$app_name  # 自己加的rule-set
+  # - RULE-SET,geosite_telegram,$app_name  # 自己加的rule-set
+  # - MATCH,$app_name
+
+#rule-providers:  # 自己加的规则集
+#  geoip_private:
+#    type: http
+#    behavior: ipcidr
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/private.yaml"
+#    path: ./provider/rule-set/geoip_private.yaml
+#    interval: 259200
+#    proxy: $app_name
+
+#  geoip_cn:
+#    type: http
+#    behavior: ipcidr
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.yaml"
+#    path: ./provider/rule-set/geoip_cn.yaml
+#    interval: 259200
+#    proxy: $app_name
+
+#  geosite_private:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.yaml"
+#    path: ./provider/rule-set/geosite_private.yaml
+#    interval: 259200
+#    proxy: $app_name
+
+#  geosite_cn:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.yaml"
+#    path: ./provider/rule-set/geosite_cn.yaml
+#    interval: 259200
+#    proxy: $app_name
+
+#  geosite_geolocation-cn:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-cn.yaml"
+#    path: ./provider/rule-set/geosite_geolocation-cn.yaml
+#    interval: 259200
+#    proxy: $app_name
+
+#  geosite_category-ads-all:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.yaml"
+#    path: ./provider/rule-set/geosite_category-ads-all.yaml
+#    interval: 604800
+#    proxy: $app_name
+
+#  geoip_google:
+#    type: http
+#    behavior: ipcidr
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.yaml"
+#    path: ./provider/rule-set/geoip_google.yaml
+#    interval: 604800
+#    proxy: $app_name
+
+#  geoip_telegram:
+#    type: http
+#    behavior: ipcidr
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegram.yaml"
+#    path: ./provider/rule-set/geoip_telegram.yaml
+#    interval: 604800
+#    proxy: $app_name
+
+#  geosite_google:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.yaml"
+#    path: ./provider/rule-set/geosite_google.yaml
+#    interval: 604800
+#    proxy: $app_name
+
+#  geosite_youtube:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.yaml"
+#    path: ./provider/rule-set/geosite_youtube.yaml
+#    interval: 604800
+#    proxy: $app_name
+
+#  geosite_tiktok:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.yaml"
+#    path: ./provider/rule-set/geosite_tiktok.yaml
+#    interval: 604800
+#    proxy: $app_name
+
+#  geosite_telegram:
+#    type: http
+#    behavior: domain
+#    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.yaml"
+#    path: ./provider/rule-set/geosite_telegram.yaml
+#    interval: 604800
+#    proxy: $app_name
