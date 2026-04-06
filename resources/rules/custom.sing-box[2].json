@@ -94,6 +94,27 @@
             "listen": "::",
             "listen_port": 2334,
             "users": []
+        },
+        {
+            "tag": "http-in",
+            "type": "http",
+            "listen": "::",
+            "listen_port": 2332,
+            "users": []
+        },
+        {
+            "tag": "redirect-in",
+            "type": "redirect",
+            "listen": "::",
+            "listen_port": 2335,
+            "users": []
+        },
+        {
+            "tag": "dns-in",
+            "type": "direct",
+            "listen": "::",
+            "listen_port": 1053,
+            "users": []
         }
     ],
     "outbounds": [
