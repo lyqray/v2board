@@ -8,7 +8,7 @@ bind-address: "*"
 lan-allowed-ips:
   # - 0.0.0.0/8
   - 10.0.0.0/8
-  - 127.0.0.0/8
+  # - 127.0.0.0/8
   - 169.254.0.0/16
   - 172.16.0.0/12
   - 192.168.0.0/16
@@ -16,7 +16,7 @@ lan-allowed-ips:
   - 192.0.0.0/24
   - 192.0.2.0/24
   - 192.88.99.0/24
-  - 198.18.0.0/15
+  # - 198.18.0.0/15
   - 198.51.100.0/24
   - 203.0.113.0/24
   - 224.0.0.0/4
@@ -24,15 +24,18 @@ lan-allowed-ips:
   - 240.0.0.0/4
   - 255.255.255.255/32
   # - "::/128"
-  - "::1/128"
+  # - "::1/128"
   - "fe80::/10"
-  - "fc00::/7"
+  # - "fc00::/7"
   - "ff00::/8"
   - "2001:db8::/32"
 mode: rule
 log-level: info
 ipv6: true
 external-controller: 127.0.0.1:9090
+secret: "wocaomima"
+external-ui: zashboard
+external-ui-url: "https://github.com/Zephyruso/zashboard/releases/latest/download/dist-no-fonts.zip"
 
 # 更改 geoip 使用文件，mmdb 或者 dat，可选 true/false，true为 dat，此项有默认值 false
 geodata-mode: false  # mmdb 性能更好占用更小
@@ -164,7 +167,7 @@ dns:
   enable: true
   cache-algorithm: arc
   # prefer-h3: false  # 是否开启 DoH 支持 HTTP/3，将并发尝试
-  # listen: 0.0.0.0:53  # 开启 DNS 服务器监听
+  listen: '[::]:1053'  # 开启 DNS 服务器监听
   ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
